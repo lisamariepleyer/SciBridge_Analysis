@@ -48,3 +48,51 @@ for (i in 1:nrow(quizstarts)) {
             answer_duration := durations[order(question)], 
             by = .EACHI]
 }
+
+# gather average per user data
+
+average_per_user_data <- data.table(uid = quizstarts$uid,
+                                    view = quizstarts$view)
+
+setkey(average_per_user_data, uid)
+
+# track quiz score
+
+average_per_user_data <- questions[,.N, uid][average_per_user_data][is.na(N), N := 0]
+setnames(average_per_user_data, "N", "number_of_answered_questions")
+
+average_per_user_data <- questions[isCorrect == TRUE, .N, uid][average_per_user_data][is.na(N), N := 0]
+setnames(average_per_user_data, "N", "number_of_correct_answers")
+
+average_per_user_data[, percent_correct_answers := (number_of_correct_answers / number_of_answered_questions) * 100]
+average_per_user_data[is.na(percent_correct_answers), percent_correct_answers := 0]
+
+# track whether quiz was finished
+
+average_per_user_data[, has_finished_quiz := ifelse(number_of_answered_questions == 10, TRUE, FALSE)]
+
+# track average time spent on each question
+
+average_per_user_data <- questions[, mean(answer_duration), uid][average_per_user_data]
+setnames(average_per_user_data, "V1", "average_time_spent_on_answer")
+
+# track usage of sources
+
+average_per_user_data <- questions[, sum(hasViewedSource), uid][average_per_user_data]
+setnames(average_per_user_data, "V1", "number_has_used_sources")
+
+average_per_user_data[, has_used_sources := ifelse(number_has_used_sources > 0, TRUE, FALSE)]
+
+average_per_user_data <- questions[, sum(hasViewedGame), uid][average_per_user_data]
+setnames(average_per_user_data, "V1", "number_has_viewed_game")
+
+average_per_user_data[view == "plain", number_has_viewed_game := NA]
+average_per_user_data[, has_viewed_game := ifelse(number_has_viewed_game > 0, TRUE, FALSE)]
+
+average_per_user_data <- personal_infos[, .(uid, hasUsedGoogle)][average_per_user_data]
+setnames(average_per_user_data, "hasUsedGoogle", "has_used_google")
+
+# track personal infos
+
+average_per_user_data <- personal_infos[, .(uid, age, gender, level_it, level_physics_chemistry, level_medicine, level_climate_change)][average_per_user_data]
+
