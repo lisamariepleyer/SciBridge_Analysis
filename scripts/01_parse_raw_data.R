@@ -74,7 +74,7 @@ average_per_user_data[, has_finished_quiz := ifelse(number_of_answered_questions
 # track average time spent on each question
 
 average_per_user_data <- questions[, mean(answer_duration), uid][average_per_user_data]
-setnames(average_per_user_data, "V1", "average_time_spent_on_answer")
+setnames(average_per_user_data, "V1", "average_time_spent_to_answer")
 
 # track usage of sources
 
