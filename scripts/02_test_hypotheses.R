@@ -100,6 +100,42 @@ ggsave("plots/number_of_answered_questions.png", width = 3, height = 4)
 
 # plot number of people finishing quiz
 
+tmp <- average_per_user_data[number_of_answered_questions > 0, 
+                             c(.N, 
+                               sum(has_finished_quiz),
+                               .N - sum(has_finished_quiz),
+                               (sum(has_finished_quiz)/.N)*100), 
+                             view]
+setnames(tmp, "V1", "value")
+tmp[, category := rep(c("Number of participants", "Number of completed quizzes", "Number of aborted quizzes", "completion_rate"), length(unique(tmp$view)))]
+tmp[, fill_colour_category := paste(view, category, sep = " | ")]
+
+tmp2 <- tmp[category=="Number of completed quizzes", .(view, value)]
+setnames(tmp2, "value", "number_of_completed_quizzes")
+tmp2[, completion_rate := tmp[category=="completion_rate", value]]
+tmp2[, total_quizzes := tmp[category=="Number of participants", value]]
+
+ggplot() +
+  geom_bar(data=tmp[category == "Number of aborted quizzes" | category == "Number of completed quizzes"], 
+           aes(x=view, y=value, fill=fill_colour_category, colour=view),
+           stat="identity", width = 0.75) +
+  geom_text(data = tmp2,
+            aes(y=number_of_completed_quizzes + 1, x = view, label=sprintf("%.2f%%", completion_rate), colour=view), 
+            vjust=1, size=3.5) +
+  geom_text(data = tmp2,
+            aes(y=total_quizzes + 1, x = view, label=total_quizzes, colour=view), 
+            vjust=1, size=3.5) +
+  labs(title="Quiz Completion", 
+       x="View", 
+       y = "Number of quiz participants") +
+  scale_fill_manual(values = c("white", light_cols[1], "white", light_cols[2])) +
+  scale_color_manual(values = dark_cols) +
+  theme_linedraw() +
+  theme(legend.title = element_blank(),
+        axis.title.x = element_blank())
+
+ggsave("plots/number_of_completed_quizzes.png", width = 5, height = 4)
+
 # plot number of people playing minigame
 
 # plot number of people checking additional sources
