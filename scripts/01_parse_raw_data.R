@@ -96,3 +96,7 @@ setnames(average_per_user_data, "hasUsedGoogle", "has_used_google")
 
 average_per_user_data <- personal_infos[, .(uid, age, gender, level_it, level_physics_chemistry, level_medicine, level_climate_change)][average_per_user_data]
 
+# save data
+
+fwrite(average_per_user_data, "raw_data/average_per_user_data.csv")
+saveRDS(average_per_user_data, "raw_data/average_per_user_data.rds")
