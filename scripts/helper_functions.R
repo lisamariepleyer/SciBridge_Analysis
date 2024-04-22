@@ -3,9 +3,9 @@
 get_barplot_df <- function(df, col, categories) {
   tmp <- df[, 
             c(.N, 
-              sum(get(col)),
-              .N - sum(get(col)),
-              (sum(get(col))/.N)*100), 
+              sum(get(col), na.rm = TRUE),
+              .N - sum(get(col), na.rm = TRUE),
+              (sum(get(col), na.rm = TRUE)/.N)*100), 
             view]
   setnames(tmp, "V1", "value")
   

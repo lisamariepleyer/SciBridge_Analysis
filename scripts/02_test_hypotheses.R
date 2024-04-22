@@ -109,30 +109,32 @@ categories <- c("Number of participants", "Number of completed quizzes", "Number
 barplot_tmp <- get_barplot_df(average_per_user_data[number_of_answered_questions > 0], "has_finished_quiz", categories)
 barplot_labels_tmp <- get_barplot_labels(barplot_tmp, categories)
 
+barplot_labels_legend <- sort(apply(expand.grid(unique(barplot_tmp$view), categories[c(3, 2)]), 1, function(row) paste(row, collapse=" | ")))
+
 ggplot() +
   geom_bar(data=barplot_tmp[category == categories[3] | category == categories[2]], 
            aes(x=view, 
                y=value, 
                fill=fill_colour_category, 
-               colour=view),
+               colour=fill_colour_category),
            stat="identity", width = 0.75) +
-  geom_text(data = barplot_labels_tmp,
-            aes(y=get(paste(strsplit(categories[2], split = " ")[[1]], collapse = "")) + 1, 
-                x = view, 
-                label=sprintf("%.2f%%", get(paste(strsplit(categories[4], split = " ")[[1]], collapse = ""))), 
-                colour=view), 
-            vjust=1, size=3.5) +
-  geom_text(data = barplot_labels_tmp,
-            aes(y=get(paste(strsplit(categories[1], split = " ")[[1]], collapse = "")) + 1, 
-                x = view, 
-                label=get(paste(strsplit(categories[1], split = " ")[[1]], collapse = "")), 
-                colour=view), 
-            vjust=1, size=3.5) +
+  scale_fill_manual(breaks=barplot_labels_legend,
+                    values = c("white", light_cols[1], "white", light_cols[2])) +
+  scale_color_manual(breaks=barplot_labels_legend,
+                     values = c(dark_cols[1], dark_cols[1], dark_cols[2], dark_cols[2])) +
   labs(title="Quiz Completion", 
        x="View", 
        y = "Number of quiz participants") +
-  scale_fill_manual(values = c("white", light_cols[1], "white", light_cols[2])) +
-  scale_color_manual(values = dark_cols) +
+  geom_text(data = barplot_labels_tmp,
+            aes(y=get(paste(strsplit(categories[2], split = " ")[[1]], collapse = "")) + 1, 
+                x = view, 
+                label=sprintf("%.2f%%", get(paste(strsplit(categories[4], split = " ")[[1]], collapse = "")))), 
+            vjust=1, size=3.5, color=dark_cols) +
+  geom_text(data = barplot_labels_tmp,
+            aes(y=get(paste(strsplit(categories[1], split = " ")[[1]], collapse = "")) + 1, 
+                x = view, 
+                label=get(paste(strsplit(categories[1], split = " ")[[1]], collapse = ""))), 
+            vjust=1, size=3.5, color=dark_cols) +
   theme_linedraw() +
   theme(legend.title = element_blank(),
         axis.title.x = element_blank())
@@ -176,30 +178,32 @@ categories <- c("Number of participants", "Participants using additional sources
 barplot_tmp <- get_barplot_df(average_per_user_data[number_of_answered_questions > 0], "has_used_sources", categories)
 barplot_labels_tmp <- get_barplot_labels(barplot_tmp, categories)
 
+barplot_labels_legend <- sort(apply(expand.grid(unique(barplot_tmp$view), categories[c(3, 2)]), 1, function(row) paste(row, collapse=" | ")))
+
 ggplot() +
   geom_bar(data=barplot_tmp[category == categories[3] | category == categories[2]], 
            aes(x=view, 
                y=value, 
                fill=fill_colour_category, 
-               colour=view),
+               colour=fill_colour_category),
            stat="identity", width = 0.75) +
-  geom_text(data = barplot_labels_tmp,
-            aes(y=get(paste(strsplit(categories[2], split = " ")[[1]], collapse = "")) + 1, 
-                x = view, 
-                label=sprintf("%.2f%%", get(paste(strsplit(categories[4], split = " ")[[1]], collapse = ""))), 
-                colour=view), 
-            vjust=1, size=3.5) +
-  geom_text(data = barplot_labels_tmp,
-            aes(y=get(paste(strsplit(categories[1], split = " ")[[1]], collapse = "")) + 1, 
-                x = view, 
-                label=get(paste(strsplit(categories[1], split = " ")[[1]], collapse = "")), 
-                colour=view), 
-            vjust=1, size=3.5) +
+  scale_fill_manual(breaks=barplot_labels_legend,
+                    values = c("white", light_cols[1], "white", light_cols[2])) +
+  scale_color_manual(breaks=barplot_labels_legend,
+                     values = c(dark_cols[1], dark_cols[1], dark_cols[2], dark_cols[2])) +
   labs(title="Check of Additional Sources", 
        x="View", 
        y = "Number of quiz participants") +
-  scale_fill_manual(values = c("white", light_cols[1], "white", light_cols[2])) +
-  scale_color_manual(values = dark_cols) +
+  geom_text(data = barplot_labels_tmp,
+            aes(y=get(paste(strsplit(categories[2], split = " ")[[1]], collapse = "")) + 1, 
+                x = view, 
+                label=sprintf("%.2f%%", get(paste(strsplit(categories[4], split = " ")[[1]], collapse = "")))), 
+            vjust=1, size=3.5, color=dark_cols) +
+  geom_text(data = barplot_labels_tmp,
+            aes(y=get(paste(strsplit(categories[1], split = " ")[[1]], collapse = "")) + 1, 
+                x = view, 
+                label=get(paste(strsplit(categories[1], split = " ")[[1]], collapse = ""))), 
+            vjust=1, size=3.5, color=dark_cols) +
   theme_linedraw() +
   theme(legend.title = element_blank(),
         axis.title.x = element_blank())
@@ -208,7 +212,42 @@ ggsave("plots/number_of_people_checking_sources.png", width = 5.5, height = 4.5)
 
 # plot number of people playing minigame
 
+categories <- c("Number of participants", "Participants playing minigame", "Participants not playing minigame", "Rate of people playing minigame")
 
+barplot_tmp <- get_barplot_df(average_per_user_data[number_of_answered_questions > 0], "has_viewed_game", categories)
+barplot_labels_tmp <- get_barplot_labels(barplot_tmp, categories)
+
+barplot_labels_legend <- sort(apply(expand.grid(unique(barplot_tmp$view), categories[c(3, 2)]), 1, function(row) paste(row, collapse=" | ")))
+
+ggplot() +
+  geom_bar(data=barplot_tmp[category == categories[3] | category == categories[2]], 
+           aes(x=view, 
+               y=value, 
+               fill=fill_colour_category, 
+               colour=fill_colour_category),
+           stat="identity", width = 0.75) +
+  scale_fill_manual(breaks=barplot_labels_legend,
+                    values = c("white", light_cols[1], "white", light_cols[2])) +
+  scale_color_manual(breaks=barplot_labels_legend,
+                     values = c(dark_cols[1], dark_cols[1], dark_cols[2], dark_cols[2])) +
+  labs(title="Check of Additional Sources", 
+       x="View", 
+       y = "Number of quiz participants") +
+  geom_text(data = barplot_labels_tmp,
+            aes(y=get(paste(strsplit(categories[2], split = " ")[[1]], collapse = "")) + 1, 
+                x = view, 
+                label=sprintf("%.2f%%", get(paste(strsplit(categories[4], split = " ")[[1]], collapse = "")))), 
+            vjust=1, size=3.5, color=dark_cols) +
+  geom_text(data = barplot_labels_tmp,
+            aes(y=get(paste(strsplit(categories[1], split = " ")[[1]], collapse = "")) + 1, 
+                x = view, 
+                label=get(paste(strsplit(categories[1], split = " ")[[1]], collapse = ""))), 
+            vjust=1, size=3.5, color=dark_cols) +
+  theme_linedraw() +
+  theme(legend.title = element_blank(),
+        axis.title.x = element_blank())
+
+ggsave("plots/number_of_people_playing_minigame.png", width = 5.5, height = 4.5)
 
 # plot number of people using external sources
 
