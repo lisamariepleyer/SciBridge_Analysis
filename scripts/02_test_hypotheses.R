@@ -40,7 +40,7 @@ ggplot(apud,
   theme(legend.position = "none",
         axis.title.x = element_blank())
 
-ggsave("plots/quiz_score_per_view.png", width = 3, height = 4)
+ggsave("plots/hypo_quiz_score_per_view.png", width = 3, height = 4)
 
 # plot time spent answering questions
 
@@ -73,7 +73,7 @@ ggplot(apud,
   theme(legend.position = "none",
         axis.title.x = element_blank())
 
-ggsave("plots/average_time_spent_answering_question.png", width = 3, height = 4)
+ggsave("plots/hypo_average_time_spent_answering_question.png", width = 3, height = 4)
 
 # plot number of answered questions
 
@@ -103,7 +103,7 @@ ggplot(apud,
   theme(legend.position = "none",
         axis.title.x = element_blank())
 
-ggsave("plots/number_of_answered_questions.png", width = 3, height = 4)
+ggsave("plots/hypo_number_of_answered_questions.png", width = 3, height = 4)
 
 # plot number of people finishing quiz
 
@@ -142,7 +142,7 @@ ggplot() +
   theme(legend.title = element_blank(),
         axis.title.x = element_blank())
 
-ggsave("plots/number_of_completed_quizzes.png", width = 5, height = 4)
+ggsave("plots/hypo_number_of_completed_quizzes.png", width = 5, height = 4)
 
 # plot times sources checked per person
 
@@ -172,7 +172,7 @@ ggplot(apud,
   theme(legend.position = "none",
         axis.title.x = element_blank())
 
-ggsave("plots/number_of_times_sources_were_checked.png", width = 3, height = 4)
+ggsave("plots/hypo_number_of_times_sources_were_checked.png", width = 3, height = 4)
 
 # plot number of people checking additional sources
 
@@ -211,7 +211,7 @@ ggplot() +
   theme(legend.title = element_blank(),
         axis.title.x = element_blank())
 
-ggsave("plots/number_of_people_checking_sources.png", width = 5.5, height = 4.5)
+ggsave("plots/hypo_number_of_people_checking_sources.png", width = 5.5, height = 4.5)
 
 # plot number of people playing minigame
 
@@ -250,7 +250,7 @@ ggplot() +
   theme(legend.title = element_blank(),
         axis.title.x = element_blank())
 
-ggsave("plots/number_of_people_playing_minigame.png", width = 5.5, height = 4.5)
+ggsave("plots/hypo_number_of_people_playing_minigame.png", width = 5.5, height = 4.5)
 
 # plot number of people using external sources
 
@@ -289,5 +289,5 @@ ggplot() +
   theme(legend.title = element_blank(),
         axis.title.x = element_blank())
 
-ggsave("plots/number_of_people_checking_external_sources.png", width = 5.5, height = 4.5)
+ggsave("plots/hypo_number_of_people_checking_external_sources.png", width = 5.5, height = 4.5)
 
