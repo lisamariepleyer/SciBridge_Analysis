@@ -18,8 +18,9 @@ ggplot(average_per_user_data[number_of_answered_questions > 0],
        aes(x=view, y=percent_correct_answers)) + 
   geom_boxplot(width = 0.5,
                aes(colour=view)) +
-  geom_dotplot(binaxis='y', dotsize=0.75, stackdir='center',
-               aes(fill=view)) +
+  geom_dotplot(binaxis='y', stackdir='center', dotsize=0.75, 
+               aes(fill=view),
+               position = position_jitter(width = 0.25, height = 0.25, seed = 2)) +
   geom_text(data = mean_scores, 
             aes(x = view, y = 105, label = sprintf("%.2f%%", mean_scores)),
             vjust = -0.5, color = "black") +
@@ -50,8 +51,9 @@ ggplot(average_per_user_data[number_of_answered_questions > 0],
        aes(x=view, y=average_time_spent_to_answer)) + 
   geom_boxplot(width = 0.5,
                aes(colour=view)) +
-  geom_dotplot(binaxis='y', dotsize=0.75, stackdir='center',
-               aes(fill=view)) +
+  geom_dotplot(binaxis='y', stackdir='center', dotsize=0.75,
+               aes(fill=view),
+               position = position_jitter(width = 0.25, height = 0.25, seed = 1)) +
   geom_text(data = mean_scores, 
             aes(x = view, y = max_score * 1.1, label = sprintf("%.2fs", mean_scores)),
             vjust = -0.5, color = "black") +
@@ -80,12 +82,12 @@ ggplot(average_per_user_data[number_of_answered_questions > 0],
        aes(x=view, y=number_of_answered_questions)) + 
   geom_boxplot(width = 0.5,
                aes(colour=view)) +
-  geom_dotplot(binaxis='y', dotsize=0.75, stackdir='center',
-               aes(fill=view)) +
+  geom_dotplot(binaxis='y', stackdir='center', dotsize=0.75,
+               aes(fill=view), 
+               position = position_jitter(width = 0.25, height = 0.25, seed = 1)) +
   geom_text(data = mean_scores, 
             aes(x = view, y = 10.5, label = sprintf("%.2f", mean_scores)),
             vjust = -0.5, color = "black") +
-  #geom_jitter(shape=16, position=position_jitter(0.2))
   scale_y_continuous(breaks=seq(0,10,2), limits = c(0,11)) +
   labs(title="Quiz Completion", 
        x="View", 
