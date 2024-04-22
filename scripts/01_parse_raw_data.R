@@ -49,6 +49,32 @@ for (i in 1:nrow(quizstarts)) {
             by = .EACHI]
 }
 
+# gather average per question data
+
+average_per_question_data <- questions[,
+                                       .(.N,
+                                         sum(isCorrect),
+                                         sum(isCorrect)/.N,
+                                         mean(answer_duration),
+                                         sum(hasViewedSource),
+                                         sum(hasViewedSource)/.N,
+                                         sum(hasViewedGame),
+                                         sum(hasViewedGame)/.N), 
+                                       question]
+
+names(average_per_question_data) <- c("question",
+                                      "total_submissions", 
+                                      "no_answered_correctly",
+                                      "perc_answered_correctly",
+                                      "average_time_to_answer",
+                                      "no_has_viewed_source",
+                                      "perc_has_viewed_source",
+                                      "no_has_viewed_game",
+                                      "perc_has_viewed_game")
+
+average_per_question_data [, "area" := c("it", "physics_chemistry", "medicine", "physics_chemistry", "it", "climate_change", "medicine", "physics_chemistry", "it", "climate_change")]
+
+
 # gather average per user data
 
 average_per_user_data <- data.table(uid = quizstarts$uid,
@@ -98,5 +124,12 @@ average_per_user_data <- personal_infos[, .(uid, age, gender, level_it, level_ph
 
 # save data
 
+fwrite(average_per_question_data, "raw_data/average_per_question_data.csv")
+saveRDS(average_per_question_data, "raw_data/average_per_question_data.rds")
+
+fwrite(questions, "raw_data/parsed_questions_data.csv")
+saveRDS(questions, "raw_data/parsed_questions_data.rds")
+
 fwrite(average_per_user_data, "raw_data/average_per_user_data.csv")
 saveRDS(average_per_user_data, "raw_data/average_per_user_data.rds")
+
