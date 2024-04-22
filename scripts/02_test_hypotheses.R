@@ -6,20 +6,20 @@ source("scripts/helper_functions.R")
 average_per_user_data <- readRDS("raw_data/average_per_user_data.rds")
 
 # for analysis filter for participants which have answered at least one question, otherwise exclude
-apud <- average_per_user_data[number_of_answered_questions > 0]
+participants <- average_per_user_data[number_of_answered_questions > 0]
 
 light_cols <- c("#d0cfe7", "#bdbdbd")
 dark_cols <- c("#756bb1", "#636363")
 
 # plot quiz score per user per view
 
-mean_scores <- apud[, mean(percent_correct_answers), view]
+mean_scores <- participants[, mean(percent_correct_answers), view]
 setnames(mean_scores, "V1", "mean_scores")
 
-t.test(apud[view=="plain", percent_correct_answers],
-       apud[view=="feedback", percent_correct_answers])
+t.test(participants[view=="plain", percent_correct_answers],
+       participants[view=="feedback", percent_correct_answers])
 
-ggplot(apud, 
+ggplot(participants, 
        aes(x=view, y=percent_correct_answers)) + 
   geom_boxplot(width = 0.5,
                aes(colour=view)) +
@@ -44,15 +44,15 @@ ggsave("plots/hypo_quiz_score_per_view.png", width = 3, height = 4)
 
 # plot time spent answering questions
 
-mean_scores <- apud[, mean(average_time_spent_to_answer), view]
+mean_scores <- participants[, mean(average_time_spent_to_answer), view]
 setnames(mean_scores, "V1", "mean_scores")
 
-max_score <- apud[, max(average_time_spent_to_answer)]
+max_score <- participants[, max(average_time_spent_to_answer)]
 
-t.test(apud[view=="plain", average_time_spent_to_answer],
-       apud[view=="feedback", average_time_spent_to_answer])
+t.test(participants[view=="plain", average_time_spent_to_answer],
+       participants[view=="feedback", average_time_spent_to_answer])
 
-ggplot(apud, 
+ggplot(participants, 
        aes(x=view, y=average_time_spent_to_answer)) + 
   geom_boxplot(width = 0.5,
                aes(colour=view)) +
@@ -77,13 +77,13 @@ ggsave("plots/hypo_average_time_spent_answering_question.png", width = 3, height
 
 # plot number of answered questions
 
-mean_scores <- apud[, mean(number_of_answered_questions), view]
+mean_scores <- participants[, mean(number_of_answered_questions), view]
 setnames(mean_scores, "V1", "mean_scores")
 
-t.test(apud[view=="plain", number_of_answered_questions],
-       apud[view=="feedback", number_of_answered_questions])
+t.test(participants[view=="plain", number_of_answered_questions],
+       participants[view=="feedback", number_of_answered_questions])
 
-ggplot(apud, 
+ggplot(participants, 
        aes(x=view, y=number_of_answered_questions)) + 
   geom_boxplot(width = 0.5,
                aes(colour=view)) +
@@ -109,7 +109,7 @@ ggsave("plots/hypo_number_of_answered_questions.png", width = 3, height = 4)
 
 categories <- c("Number of participants", "Number of completed quizzes", "Number of aborted quizzes", "Completion Rate")
 
-barplot_tmp <- get_barplot_df(apud, "has_finished_quiz", categories)
+barplot_tmp <- get_barplot_df(participants, "has_finished_quiz", categories)
 barplot_labels_tmp <- get_barplot_labels(barplot_tmp, categories)
 
 barplot_labels_legend <- sort(apply(expand.grid(unique(barplot_tmp$view), categories[c(3, 2)]), 1, function(row) paste(row, collapse=" | ")))
@@ -146,13 +146,13 @@ ggsave("plots/hypo_number_of_completed_quizzes.png", width = 5, height = 4)
 
 # plot times sources checked per person
 
-mean_scores <- apud[, mean(number_has_used_sources), view]
+mean_scores <- participants[, mean(number_has_used_sources), view]
 setnames(mean_scores, "V1", "mean_scores")
 
-t.test(apud[view=="plain", number_has_used_sources],
-       apud[view=="feedback", number_has_used_sources])
+t.test(participants[view=="plain", number_has_used_sources],
+       participants[view=="feedback", number_has_used_sources])
 
-ggplot(apud, 
+ggplot(participants, 
        aes(x=view, y=number_has_used_sources)) + 
   geom_boxplot(width = 0.5,
                aes(colour=view)) +
@@ -178,7 +178,7 @@ ggsave("plots/hypo_number_of_times_sources_were_checked.png", width = 3, height 
 
 categories <- c("Number of participants", "Participants using additional sources", "Participants not using additional sources", "Sources usage rate")
 
-barplot_tmp <- get_barplot_df(apud, "has_used_sources", categories)
+barplot_tmp <- get_barplot_df(participants, "has_used_sources", categories)
 barplot_labels_tmp <- get_barplot_labels(barplot_tmp, categories)
 
 barplot_labels_legend <- sort(apply(expand.grid(unique(barplot_tmp$view), categories[c(3, 2)]), 1, function(row) paste(row, collapse=" | ")))
@@ -217,7 +217,7 @@ ggsave("plots/hypo_number_of_people_checking_sources.png", width = 5.5, height =
 
 categories <- c("Number of participants", "Participants playing minigame", "Participants not playing minigame", "Rate of people playing minigame")
 
-barplot_tmp <- get_barplot_df(apud, "has_viewed_game", categories)
+barplot_tmp <- get_barplot_df(participants, "has_viewed_game", categories)
 barplot_labels_tmp <- get_barplot_labels(barplot_tmp, categories)
 
 barplot_labels_legend <- sort(apply(expand.grid(unique(barplot_tmp$view), categories[c(3, 2)]), 1, function(row) paste(row, collapse=" | ")))
@@ -256,7 +256,7 @@ ggsave("plots/hypo_number_of_people_playing_minigame.png", width = 5.5, height =
 
 categories <- c("Number of participants", "Participants using external sources", "Participants not using external sources", "Sources usage rate")
 
-barplot_tmp <- get_barplot_df(apud, "has_used_google", categories)
+barplot_tmp <- get_barplot_df(participants, "has_used_google", categories)
 barplot_labels_tmp <- get_barplot_labels(barplot_tmp, categories)
 
 barplot_labels_legend <- sort(apply(expand.grid(unique(barplot_tmp$view), categories[c(3, 2)]), 1, function(row) paste(row, collapse=" | ")))

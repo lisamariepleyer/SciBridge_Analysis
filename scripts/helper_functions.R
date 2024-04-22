@@ -21,3 +21,26 @@ get_barplot_labels <- function(df, categories) {
   tmp[, paste(strsplit(categories[4], split = " ")[[1]], collapse = "") := df[category==categories[4], value]]
   tmp[, paste(strsplit(categories[1], split = " ")[[1]], collapse = "") := df[category==categories[1], value]]
 }
+
+get_number_in_group_per_view <- function(df, col, group_levels) {
+  tmp <- df[, .N, .(get(col), view)]
+  
+  tmp[, get := as.character(get)]
+  tmp[is.na(get), get := group_levels[length(group_levels)]]
+  
+  for (g in group_levels) {
+    for (v in views) {
+      if (tmp[get == g & view == v, .N] == 0) {
+        tmp <- rbind(tmp,
+                     data.table(get = g, view = v, N = 0))
+      }
+    }
+  }
+  
+  tmp[, get := factor(get, levels = group_levels)]
+  tmp[, view := factor(view, levels = views)]
+  
+  setnames(tmp, "get", col)
+  
+  return(tmp)
+}
