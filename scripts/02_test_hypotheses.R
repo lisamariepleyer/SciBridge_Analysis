@@ -1,6 +1,8 @@
 library(data.table)
 library(ggplot2)
 
+source("scripts/helper_functions.R")
+
 average_per_user_data <- readRDS("raw_data/average_per_user_data.rds")
 
 light_cols <- c("#d0cfe7", "#bdbdbd")
@@ -20,12 +22,12 @@ ggplot(average_per_user_data[number_of_answered_questions > 0],
                aes(colour=view)) +
   geom_dotplot(binaxis='y', stackdir='center', dotsize=0.75, 
                aes(fill=view),
-               position = position_jitter(width = 0.25, height = 0.25, seed = 2)) +
+               position = position_jitter(width = 0.25, height = 0.25, seed = 1)) +
   geom_text(data = mean_scores, 
             aes(x = view, y = 105, label = sprintf("%.2f%%", mean_scores)),
             vjust = -0.5, color = "black") +
   #geom_jitter(shape=16, position=position_jitter(0.2))
-  scale_y_continuous(breaks=seq(0,100,20), limits = c(0,110)) +
+  scale_y_continuous(breaks=seq(0,100,20), limits = c(-0.3,110)) +
   labs(title="Distribution of Quiz Scores", 
        x="View", 
        y = "Correctly answered questions [%]") +
@@ -102,30 +104,29 @@ ggsave("plots/number_of_answered_questions.png", width = 3, height = 4)
 
 # plot number of people finishing quiz
 
-tmp <- average_per_user_data[number_of_answered_questions > 0, 
-                             c(.N, 
-                               sum(has_finished_quiz),
-                               .N - sum(has_finished_quiz),
-                               (sum(has_finished_quiz)/.N)*100), 
-                             view]
-setnames(tmp, "V1", "value")
-tmp[, category := rep(c("Number of participants", "Number of completed quizzes", "Number of aborted quizzes", "completion_rate"), length(unique(tmp$view)))]
-tmp[, fill_colour_category := paste(view, category, sep = " | ")]
+categories <- c("Number of participants", "Number of completed quizzes", "Number of aborted quizzes", "Completion Rate")
 
-tmp2 <- tmp[category=="Number of completed quizzes", .(view, value)]
-setnames(tmp2, "value", "number_of_completed_quizzes")
-tmp2[, completion_rate := tmp[category=="completion_rate", value]]
-tmp2[, total_quizzes := tmp[category=="Number of participants", value]]
+barplot_tmp <- get_barplot_df(average_per_user_data[number_of_answered_questions > 0], "has_finished_quiz", categories)
+barplot_labels_tmp <- get_barplot_labels(barplot_tmp, categories)
 
 ggplot() +
-  geom_bar(data=tmp[category == "Number of aborted quizzes" | category == "Number of completed quizzes"], 
-           aes(x=view, y=value, fill=fill_colour_category, colour=view),
+  geom_bar(data=barplot_tmp[category == categories[3] | category == categories[2]], 
+           aes(x=view, 
+               y=value, 
+               fill=fill_colour_category, 
+               colour=view),
            stat="identity", width = 0.75) +
-  geom_text(data = tmp2,
-            aes(y=number_of_completed_quizzes + 1, x = view, label=sprintf("%.2f%%", completion_rate), colour=view), 
+  geom_text(data = barplot_labels_tmp,
+            aes(y=get(paste(strsplit(categories[2], split = " ")[[1]], collapse = "")) + 1, 
+                x = view, 
+                label=sprintf("%.2f%%", get(paste(strsplit(categories[4], split = " ")[[1]], collapse = ""))), 
+                colour=view), 
             vjust=1, size=3.5) +
-  geom_text(data = tmp2,
-            aes(y=total_quizzes + 1, x = view, label=total_quizzes, colour=view), 
+  geom_text(data = barplot_labels_tmp,
+            aes(y=get(paste(strsplit(categories[1], split = " ")[[1]], collapse = "")) + 1, 
+                x = view, 
+                label=get(paste(strsplit(categories[1], split = " ")[[1]], collapse = "")), 
+                colour=view), 
             vjust=1, size=3.5) +
   labs(title="Quiz Completion", 
        x="View", 
@@ -138,9 +139,77 @@ ggplot() +
 
 ggsave("plots/number_of_completed_quizzes.png", width = 5, height = 4)
 
-# plot number of people playing minigame
+# plot times sources checked per person
+
+mean_scores <- average_per_user_data[number_of_answered_questions > 0, mean(number_has_used_sources), view]
+setnames(mean_scores, "V1", "mean_scores")
+
+t.test(average_per_user_data[number_of_answered_questions > 0 & view=="plain", number_has_used_sources],
+       average_per_user_data[number_of_answered_questions > 0 & view=="feedback", number_has_used_sources])
+
+ggplot(average_per_user_data[number_of_answered_questions > 0], 
+       aes(x=view, y=number_has_used_sources)) + 
+  geom_boxplot(width = 0.5,
+               aes(colour=view)) +
+  geom_dotplot(binaxis='y', stackdir='center', dotsize=0.75,
+               aes(fill=view), 
+               position = position_jitter(width = 0.25, height = 0.25, seed = 1)) +
+  geom_text(data = mean_scores, 
+            aes(x = view, y = 10.5, label = sprintf("%.2f", mean_scores)),
+            vjust = -0.5, color = "black") +
+  scale_y_continuous(breaks=seq(0,10,2), limits = c(-0.3,11)) +
+  labs(title="Check of Additional Sources", 
+       x="View", 
+       y = "Frequency of additional sources beingchecked") +
+  scale_fill_manual(values = light_cols) +
+  scale_colour_manual(values = dark_cols) +
+  theme_linedraw() +
+  theme(legend.position = "none",
+        axis.title.x = element_blank())
+
+ggsave("plots/number_of_times_sources_were_checked.png", width = 3, height = 4)
 
 # plot number of people checking additional sources
 
+categories <- c("Number of participants", "Participants using additional sources", "Participants not using additional sources", "Sources usage rate")
+
+barplot_tmp <- get_barplot_df(average_per_user_data[number_of_answered_questions > 0], "has_used_sources", categories)
+barplot_labels_tmp <- get_barplot_labels(barplot_tmp, categories)
+
+ggplot() +
+  geom_bar(data=barplot_tmp[category == categories[3] | category == categories[2]], 
+           aes(x=view, 
+               y=value, 
+               fill=fill_colour_category, 
+               colour=view),
+           stat="identity", width = 0.75) +
+  geom_text(data = barplot_labels_tmp,
+            aes(y=get(paste(strsplit(categories[2], split = " ")[[1]], collapse = "")) + 1, 
+                x = view, 
+                label=sprintf("%.2f%%", get(paste(strsplit(categories[4], split = " ")[[1]], collapse = ""))), 
+                colour=view), 
+            vjust=1, size=3.5) +
+  geom_text(data = barplot_labels_tmp,
+            aes(y=get(paste(strsplit(categories[1], split = " ")[[1]], collapse = "")) + 1, 
+                x = view, 
+                label=get(paste(strsplit(categories[1], split = " ")[[1]], collapse = "")), 
+                colour=view), 
+            vjust=1, size=3.5) +
+  labs(title="Check of Additional Sources", 
+       x="View", 
+       y = "Number of quiz participants") +
+  scale_fill_manual(values = c("white", light_cols[1], "white", light_cols[2])) +
+  scale_color_manual(values = dark_cols) +
+  theme_linedraw() +
+  theme(legend.title = element_blank(),
+        axis.title.x = element_blank())
+
+ggsave("plots/number_of_people_checking_sources.png", width = 5.5, height = 4.5)
+
+# plot number of people playing minigame
+
+
+
 # plot number of people using external sources
+
 
