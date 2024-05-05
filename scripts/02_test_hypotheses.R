@@ -42,6 +42,37 @@ ggplot(participants,
 
 ggsave("plots/hypo_quiz_score_per_view.png", width = 3, height = 4)
 
+# plot quiz score per user per view only completed quiz participanst
+
+mean_scores <- average_per_user_data[number_of_answered_questions == 10, mean(percent_correct_answers), view]
+setnames(mean_scores, "V1", "mean_scores")
+
+average_per_user_data[number_of_answered_questions == 10, median(percent_correct_answers), view]
+average_per_user_data[number_of_answered_questions == 10, mean(percent_correct_answers), view]
+t.test(percent_correct_answers ~ view, average_per_user_data[number_of_answered_questions == 10], alternative = "greater")
+
+ggplot(average_per_user_data[number_of_answered_questions == 10], 
+       aes(x=view, y=percent_correct_answers)) + 
+  geom_boxplot(width = 0.5,
+               aes(colour=view)) +
+  geom_dotplot(binaxis='y', stackdir='center', dotsize=0.75, 
+               aes(fill=view),
+               position = position_jitter(width = 0.25, height = 0.25, seed = 1)) +
+  geom_text(data = mean_scores, 
+            aes(x = view, y = 105, label = sprintf("%.2f%%", mean_scores)),
+            vjust = -0.5, color = "black") +
+  #geom_jitter(shape=16, position=position_jitter(0.2))
+  scale_y_continuous(breaks=seq(0,100,20), limits = c(-0.3,110)) +
+  labs(x="View", 
+       y = "Correctly answered questions [%]") +
+  scale_fill_manual(values = light_cols) +
+  scale_colour_manual(values = dark_cols) +
+  theme_linedraw() +
+  theme(legend.position = "none",
+        axis.title.x = element_blank())
+
+ggsave("plots/hypo_quiz_score_per_view_only_completed.png", width = 3, height = 4)
+
 # plot time spent answering questions
 
 mean_scores <- participants[, mean(average_time_spent_to_answer), view]
