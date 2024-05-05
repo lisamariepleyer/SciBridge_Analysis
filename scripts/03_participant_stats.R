@@ -9,9 +9,15 @@ light_cols <- c("#d0cfe7", "#bdbdbd")
 dark_cols <- c("#756bb1", "#636363")
 
 views <- c("feedback", "plain")
-age_groups <- c('unter 18', '18-24', '25-34', '35-44', '45-54', '55-64', '65-74', '75-84', 'über 85', "kA")
-genders <- c("männlich", "weiblich", "nicht-binär", "andere", "kA")
-levels <- c("1", "2", "3", "ka")
+
+age_groups <- c('unter 18', '18-24', '25-34', '35-44', '45-54', '55-64', '65-74', '75-84', 'über 85', "ns")
+age_groups_thesis <- c('under 18', '18-24', '25-34', '35-44', '45-54', '55-64', '65-74', '75-84', 'over 85', "ns")
+
+genders <- c("männlich", "weiblich", "nicht-binär", "andere", "ns")
+genders_thesis <- c("male", "female", "non-binary", "other", "ns")
+
+levels <- c("1", "2", "3", "ns")
+
 areas <- c("it", "physics_chemistry", "medicine", "climate_change", "ns")
 
 participants <- average_per_user_data[number_of_answered_questions > 0]
@@ -21,7 +27,7 @@ participants <- average_per_user_data[number_of_answered_questions > 0]
 tmp <- data.table(value=c(nrow(average_per_user_data),
                           average_per_user_data[number_of_answered_questions == 0, .N, ],
                           average_per_user_data[number_of_answered_questions > 0, .N, ],
-                          average_per_user_data[number_of_answered_questions == 0, .N, ]),
+                          average_per_user_data[number_of_answered_questions == 10, .N, ]),
                   xlab=c("Quiz starts",
                          "Aborting immediately",
                          "Participants",
@@ -34,18 +40,17 @@ ggplot(tmp,
   geom_bar(stat="identity", width=0.75, fill="white", colour=dark_cols[2]) +
   scale_y_continuous(expand = c(0, 0), limits = c(0, nrow(average_per_user_data) * 1.1)) +
   scale_x_discrete(guide = guide_axis(n.dodge = 2)) +
-  labs(title="Completion Statistics", 
-       x="View", 
-       y = "Count") +
+  labs(x="View", 
+       y = "Number of Participants") +
   geom_text(data = tmp,
-            y = 1.5, 
+            y = 3, 
             aes(label=value),
             size=3.5,
             color = dark_cols[2]) +
   theme_linedraw() +
   theme(axis.title.x = element_blank())
 
-ggsave("plots/demo_completion_stats.png", width = 3, height = 4)
+ggsave("plots/demo_completion_stats.png", width = 3, height = 3)
 
 # plot number of participants per view
 
@@ -57,21 +62,22 @@ ggplot(participants[, .N, view],
   scale_y_continuous(expand = c(0, 0), 
                      limits = c(0, max(average_per_user_data[number_of_answered_questions > 0, .N, view]$N) * 1.1)) +
   scale_color_manual(values = dark_cols) +
-  labs(title="View Statistics", 
-       x="View", 
+  labs(x="View", 
        y = "Number of Participants") +
-  geom_text(y = 1,
+  geom_text(y = 2,
             aes(label=N),
             size=3.5) +
   theme_linedraw() +
   theme(axis.title.x = element_blank(),
         legend.position = "none")
 
-ggsave("plots/demo_participants_per_view.png", width = 2, height = 4)
+ggsave("plots/demo_participants_per_view.png", width = 2, height = 3)
+
+fread('raw_data/SciBridge - quizstarts.csv')[, .N, view]
 
 # plot number of participants per age group
 
-number_in_group_per_view <- get_number_in_group_per_view(participants, "age", age_groups)
+number_in_group_per_view <- get_number_in_group_per_view(participants, "age", age_groups, age_groups_thesis)
 
 ggplot(number_in_group_per_view,
        aes(x=age,
@@ -81,8 +87,7 @@ ggplot(number_in_group_per_view,
   scale_y_continuous(expand = c(0, 0), 
                      limits = c(0, max(number_in_group_per_view$N) * 1.1)) +
   scale_x_discrete(guide = guide_axis(n.dodge = 2)) +
-  labs(title="Per View Age Group Distribution", 
-       x="View", 
+  labs(x="View", 
        y = "Number of Participants") +
   geom_text(y = 0.5,
             aes(label=N),
@@ -91,11 +96,11 @@ ggplot(number_in_group_per_view,
   theme(axis.title.x = element_blank(),
         legend.position = "none")
 
-ggsave("plots/demo_participants_per_age_group.png", width = 8, height = 4)
+ggsave("plots/demo_participants_per_age_group.png", width = 7, height = 4)
 
 # plot number of participants per gender
 
-number_in_group_per_view <- get_number_in_group_per_view(participants, "gender", genders)
+number_in_group_per_view <- get_number_in_group_per_view(participants, "gender", genders, genders_thesis)
 
 ggplot(number_in_group_per_view,
        aes(x=gender,
@@ -105,8 +110,7 @@ ggplot(number_in_group_per_view,
   scale_y_continuous(expand = c(0, 0), 
                      limits = c(0, max(number_in_group_per_view$N) * 1.1)) +
   scale_x_discrete(guide = guide_axis(n.dodge = 2)) +
-  labs(title="Per View Gender Distribution", 
-       x="View", 
+  labs(x="View", 
        y = "Number of Participants") +
   geom_text(y = 0.5,
             aes(label=N),
@@ -115,15 +119,15 @@ ggplot(number_in_group_per_view,
   theme(axis.title.x = element_blank(),
         legend.position = "none")
 
-ggsave("plots/demo_participants_per_gender.png", width = 5, height = 4)
+ggsave("plots/demo_participants_per_gender.png", width = 7, height = 4)
 
 # plot number of experts per knowledge field
 
 number_in_group_per_view <- do.call(rbind,
         lapply(c("level_it", "level_physics_chemistry", "level_medicine", "level_climate_change"), 
                function(l) {
-         tmp <- get_number_in_group_per_view(participants, l, levels)[, 
-                                                                          `:=` (area = substr(l, 7, nchar(l)), 
+         tmp <- get_number_in_group_per_view(participants, l, levels, NA)[,
+                                                                          `:=` (area = substr(l, 7, nchar(l)),
                                                                                 knowledge_level = get(l))]
          
          setkey(tmp, "area")
@@ -132,9 +136,9 @@ number_in_group_per_view <- do.call(rbind,
          return(tmp)
 }))
 
-tmp <- unique(number_in_group_per_view[knowledge_level=="ka", .(view, N, knowledge_level)])
+tmp <- unique(number_in_group_per_view[knowledge_level=="ns", .(view, N, knowledge_level)])
 tmp[, area:="ns"]
-number_in_group_per_view <- number_in_group_per_view[knowledge_level!="ka"]
+number_in_group_per_view <- number_in_group_per_view[knowledge_level!="ns"]
 number_in_group_per_view <- rbind(number_in_group_per_view, tmp)
 
 number_in_group_per_view[, knowledge_level := factor(knowledge_level, levels = levels)]
@@ -152,8 +156,7 @@ ggplot(number_in_group_per_view,
   scale_fill_manual(values = c("#f0f0f0","#bdbdbd", "#636363", "#f7f7f7"),
                     labels = c("no prior knowledge", "heard about it", "dealt with it", "ns")) +
   scale_x_discrete(labels=c("it" = "IT", "physics_chemistry" = "Physics & Chemistry", "medicine" = "Medicine", "climate_change" = "Climate Change")) +
-  labs(title="Knowledge Level Statistics", 
-       x="View", 
+  labs(x="View", 
        y = "Number of Participants") +
   theme_linedraw() +
   theme(axis.title.x = element_blank(),

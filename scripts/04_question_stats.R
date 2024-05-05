@@ -66,7 +66,7 @@ ggplot() +
                fill=type),
            stat="identity", width = 0.75, color = dark_cols[2]) +
   scale_x_continuous(breaks=seq(1, 10)) +
-  scale_y_continuous(limits = c(0, max(tmp$value) * 1.2), expand = c(0, 0)) +
+  scale_y_continuous(limits = c(0, max(tmp[,sum(value),question]$V1) * 1.2), expand = c(0, 0)) +
   scale_fill_manual(values = c(light_cols[2], "white")) +
   labs(title="Question Statistics", 
        x="View", 
@@ -85,5 +85,5 @@ ggplot() +
   theme(legend.title = element_blank(),
         axis.title.x = element_blank())
 
-ggsave("plots/ques_barplot_correctly_answered_rate.png", width = 10, height = 4.5)
+ggsave("plots/ques_barplot_correctly_answered_rate.png", width = 10, height = 5)
 

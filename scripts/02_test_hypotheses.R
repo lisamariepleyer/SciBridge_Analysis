@@ -16,8 +16,9 @@ dark_cols <- c("#756bb1", "#636363")
 mean_scores <- participants[, mean(percent_correct_answers), view]
 setnames(mean_scores, "V1", "mean_scores")
 
-t.test(participants[view=="plain", percent_correct_answers],
-       participants[view=="feedback", percent_correct_answers])
+participants[, median(percent_correct_answers), view]
+participants[, mean(percent_correct_answers), view]
+t.test(percent_correct_answers ~ view, participants, alternative = "greater")
 
 ggplot(participants, 
        aes(x=view, y=percent_correct_answers)) + 
@@ -31,8 +32,7 @@ ggplot(participants,
             vjust = -0.5, color = "black") +
   #geom_jitter(shape=16, position=position_jitter(0.2))
   scale_y_continuous(breaks=seq(0,100,20), limits = c(-0.3,110)) +
-  labs(title="Distribution of Quiz Scores", 
-       x="View", 
+  labs(x="View", 
        y = "Correctly answered questions [%]") +
   scale_fill_manual(values = light_cols) +
   scale_colour_manual(values = dark_cols) +
@@ -49,8 +49,9 @@ setnames(mean_scores, "V1", "mean_scores")
 
 max_score <- participants[, max(average_time_spent_to_answer)]
 
-t.test(participants[view=="plain", average_time_spent_to_answer],
-       participants[view=="feedback", average_time_spent_to_answer])
+t.test(average_time_spent_to_answer ~ view, participants, alternative = "greater")
+t.test(average_time_spent_to_answer ~ view, participants)
+t.test(average_time_spent_to_answer ~ view, participants, alternative = "less")
 
 ggplot(participants, 
        aes(x=view, y=average_time_spent_to_answer)) + 
@@ -64,8 +65,7 @@ ggplot(participants,
             vjust = -0.5, color = "black") +
   #geom_jitter(shape=16, position=position_jitter(0.2))
   scale_y_continuous(limits = c(0, max_score * 1.2)) +
-  labs(title="Average answering time", 
-       x="View", 
+  labs(x="View", 
        y = "Time [seconds]") +
   scale_fill_manual(values = light_cols) +
   scale_colour_manual(values = dark_cols) +
@@ -83,6 +83,8 @@ setnames(mean_scores, "V1", "mean_scores")
 t.test(participants[view=="plain", number_of_answered_questions],
        participants[view=="feedback", number_of_answered_questions])
 
+t.test(number_of_answered_questions ~ view, participants, alternative = "greater")
+
 ggplot(participants, 
        aes(x=view, y=number_of_answered_questions)) + 
   geom_boxplot(width = 0.5,
@@ -94,8 +96,7 @@ ggplot(participants,
             aes(x = view, y = 10.5, label = sprintf("%.2f", mean_scores)),
             vjust = -0.5, color = "black") +
   scale_y_continuous(breaks=seq(0,10,2), limits = c(0,11)) +
-  labs(title="Quiz Completion", 
-       x="View", 
+  labs(x="View", 
        y = "Number of answered questions") +
   scale_fill_manual(values = light_cols) +
   scale_colour_manual(values = dark_cols) +
@@ -125,16 +126,15 @@ ggplot() +
                     values = c("white", light_cols[1], "white", light_cols[2])) +
   scale_color_manual(breaks=barplot_labels_legend,
                      values = c(dark_cols[1], dark_cols[1], dark_cols[2], dark_cols[2])) +
-  labs(title="Quiz Completion", 
-       x="View", 
+  labs(x="View", 
        y = "Number of quiz participants") +
   geom_text(data = barplot_labels_tmp,
-            aes(y=get(paste(strsplit(categories[2], split = " ")[[1]], collapse = "")) + 1, 
+            aes(y=get(paste(strsplit(categories[2], split = " ")[[1]], collapse = "")) + 2, 
                 x = view, 
                 label=sprintf("%.2f%%", get(paste(strsplit(categories[4], split = " ")[[1]], collapse = "")))), 
             vjust=1, size=3.5, color=dark_cols) +
   geom_text(data = barplot_labels_tmp,
-            aes(y=get(paste(strsplit(categories[1], split = " ")[[1]], collapse = "")) + 1, 
+            aes(y=get(paste(strsplit(categories[1], split = " ")[[1]], collapse = "")) + 2, 
                 x = view, 
                 label=get(paste(strsplit(categories[1], split = " ")[[1]], collapse = ""))), 
             vjust=1, size=3.5, color=dark_cols) +
@@ -152,6 +152,8 @@ setnames(mean_scores, "V1", "mean_scores")
 t.test(participants[view=="plain", number_has_used_sources],
        participants[view=="feedback", number_has_used_sources])
 
+t.test(number_has_used_sources ~ view, participants, alternative = "greater")
+
 ggplot(participants, 
        aes(x=view, y=number_has_used_sources)) + 
   geom_boxplot(width = 0.5,
@@ -163,8 +165,7 @@ ggplot(participants,
             aes(x = view, y = 10.5, label = sprintf("%.2f", mean_scores)),
             vjust = -0.5, color = "black") +
   scale_y_continuous(breaks=seq(0,10,2), limits = c(-0.3,11)) +
-  labs(title="Check of Additional Sources", 
-       x="View", 
+  labs(x="View", 
        y = "Frequency of additional sources beingchecked") +
   scale_fill_manual(values = light_cols) +
   scale_colour_manual(values = dark_cols) +
@@ -194,16 +195,15 @@ ggplot() +
                     values = c("white", light_cols[1], "white", light_cols[2])) +
   scale_color_manual(breaks=barplot_labels_legend,
                      values = c(dark_cols[1], dark_cols[1], dark_cols[2], dark_cols[2])) +
-  labs(title="Check of Additional Sources", 
-       x="View", 
+  labs(x="View", 
        y = "Number of quiz participants") +
   geom_text(data = barplot_labels_tmp,
-            aes(y=get(paste(strsplit(categories[2], split = " ")[[1]], collapse = "")) + 1, 
+            aes(y=get(paste(strsplit(categories[2], split = " ")[[1]], collapse = "")) + 2, 
                 x = view, 
                 label=sprintf("%.2f%%", get(paste(strsplit(categories[4], split = " ")[[1]], collapse = "")))), 
             vjust=1, size=3.5, color=dark_cols) +
   geom_text(data = barplot_labels_tmp,
-            aes(y=get(paste(strsplit(categories[1], split = " ")[[1]], collapse = "")) + 1, 
+            aes(y=get(paste(strsplit(categories[1], split = " ")[[1]], collapse = "")) + 2, 
                 x = view, 
                 label=get(paste(strsplit(categories[1], split = " ")[[1]], collapse = ""))), 
             vjust=1, size=3.5, color=dark_cols) +
@@ -233,16 +233,15 @@ ggplot() +
                     values = c("white", light_cols[1], "white", light_cols[2])) +
   scale_color_manual(breaks=barplot_labels_legend,
                      values = c(dark_cols[1], dark_cols[1], dark_cols[2], dark_cols[2])) +
-  labs(title="Check of Additional Sources", 
-       x="View", 
+  labs(x="View", 
        y = "Number of quiz participants") +
   geom_text(data = barplot_labels_tmp,
-            aes(y=get(paste(strsplit(categories[2], split = " ")[[1]], collapse = "")) + 1, 
+            aes(y=get(paste(strsplit(categories[2], split = " ")[[1]], collapse = "")) + 2, 
                 x = view, 
                 label=sprintf("%.2f%%", get(paste(strsplit(categories[4], split = " ")[[1]], collapse = "")))), 
             vjust=1, size=3.5, color=dark_cols) +
   geom_text(data = barplot_labels_tmp,
-            aes(y=get(paste(strsplit(categories[1], split = " ")[[1]], collapse = "")) + 1, 
+            aes(y=get(paste(strsplit(categories[1], split = " ")[[1]], collapse = "")) + 2, 
                 x = view, 
                 label=get(paste(strsplit(categories[1], split = " ")[[1]], collapse = ""))), 
             vjust=1, size=3.5, color=dark_cols) +
@@ -272,16 +271,15 @@ ggplot() +
                     values = c("white", light_cols[1], "white", light_cols[2])) +
   scale_color_manual(breaks=barplot_labels_legend,
                      values = c(dark_cols[1], dark_cols[1], dark_cols[2], dark_cols[2])) +
-  labs(title="Check of External Sources", 
-       x="View", 
+  labs(x="View", 
        y = "Number of quiz participants") +
   geom_text(data = barplot_labels_tmp,
-            aes(y=get(paste(strsplit(categories[2], split = " ")[[1]], collapse = "")) + 1, 
+            aes(y=get(paste(strsplit(categories[2], split = " ")[[1]], collapse = "")) + 2, 
                 x = view, 
                 label=sprintf("%.2f%%", get(paste(strsplit(categories[4], split = " ")[[1]], collapse = "")))), 
             vjust=1, size=3.5, color=dark_cols) +
   geom_text(data = barplot_labels_tmp,
-            aes(y=get(paste(strsplit(categories[1], split = " ")[[1]], collapse = "")) + 1, 
+            aes(y=get(paste(strsplit(categories[1], split = " ")[[1]], collapse = "")) + 2, 
                 x = view, 
                 label=get(paste(strsplit(categories[1], split = " ")[[1]], collapse = ""))), 
             vjust=1, size=3.5, color=dark_cols) +

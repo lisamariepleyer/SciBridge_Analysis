@@ -22,7 +22,7 @@ get_barplot_labels <- function(df, categories) {
   tmp[, paste(strsplit(categories[1], split = " ")[[1]], collapse = "") := df[category==categories[1], value]]
 }
 
-get_number_in_group_per_view <- function(df, col, group_levels) {
+get_number_in_group_per_view <- function(df, col, group_levels, group_levels_thesis) {
   tmp <- df[, .N, .(get(col), view)]
   
   tmp[, get := as.character(get)]
@@ -38,9 +38,14 @@ get_number_in_group_per_view <- function(df, col, group_levels) {
   }
   
   tmp[, get := factor(get, levels = group_levels)]
-  tmp[, view := factor(view, levels = views)]
-  
+  if (sum(is.na(group_levels_thesis)) == 0) {
+    for (l in 1:length(group_levels)) {
+      levels(tmp$get)[levels(tmp$get) == group_levels[l]] <- group_levels_thesis[l]
+    }
+  }
   setnames(tmp, "get", col)
+  
+  tmp[, view := factor(view, levels = views)]
   
   return(tmp)
 }
