@@ -184,6 +184,44 @@ ggplot() +
 
 ggsave("plots/gend_number_of_people_checking_sources.png", width = 8, height = 4.5)
 
+# plot times source per person & gender
+
+mean_scores <- participants[, mean(number_has_used_sources), .(view, gender)]
+mean_scores <- mean_scores[gender %in% goi]
+setnames(mean_scores, "V1", "mean_scores")
+
+for (g in goi) {
+  print(g)
+  print(t.test(number_has_used_sources ~ view, participants[gender == g], alternative = "greater"))
+}
+
+for (v in c("plain", "feedback")) {
+  print(v)
+  print(t.test(number_has_used_sources ~ gender, participants[gender != "ns" & view == v]))
+}
+
+ggplot(participants[gender %in% goi], 
+       aes(x=view, y=number_has_used_sources)) + 
+  geom_boxplot(width = 0.5,
+               aes(colour=view)) +
+  geom_dotplot(binaxis='y', stackdir='center', dotsize=0.75,
+               aes(fill=view), 
+               position = position_jitter(width = 0.25, height = 0.25, seed = 1)) +
+  geom_text(data = mean_scores, 
+            aes(x = view, y = 10.5, label = sprintf("%.2f", mean_scores)),
+            vjust = -0.5, color = "black") +
+  facet_grid(~gender) +
+  scale_y_continuous(breaks=seq(0,10,2), limits = c(-0.3,11)) +
+  labs(x="View", 
+       y = "Frequency of sources being checked") +
+  scale_fill_manual(values = light_cols) +
+  scale_colour_manual(values = dark_cols) +
+  theme_linedraw() +
+  theme(legend.position = "none",
+        axis.title.x = element_blank())
+
+ggsave("plots/gend_number_of_times_sources_were_checked_gender.png", width = 6, height = 4)
+
 # plot number of people playing minigame
 
 categories <- c("Number of participants", "Participants playing minigame", "Participants not playing minigame", "Rate of people playing minigame")
@@ -234,6 +272,36 @@ ggplot() +
 
 ggsave("plots/gend_number_of_people_playing_minigame.png", width = 8, height = 4.5)
 
+# plot times mingame played per person & gender
+
+mean_scores <- participants[, mean(number_has_viewed_game), .(view, gender)]
+mean_scores <- mean_scores[gender %in% goi]
+mean_scores <- mean_scores[view == "feedback"]
+setnames(mean_scores, "V1", "mean_scores")
+
+t.test(number_has_viewed_game ~ gender, participants[gender %in% goi & view == "feedback"])
+
+ggplot(participants[gender %in% goi & view == "feedback"], 
+       aes(x=gender, y=number_has_viewed_game)) + 
+  geom_boxplot(width = 0.5,
+               aes(colour=gender)) +
+  geom_dotplot(binaxis='y', stackdir='center', dotsize=0.75,
+               aes(fill=gender), 
+               position = position_jitter(width = 0.25, height = 0.25, seed = 1)) +
+  geom_text(data = mean_scores, 
+            aes(x = gender, y = 10.5, label = sprintf("%.2f", mean_scores)),
+            vjust = -0.5, color = "black") +
+  scale_y_continuous(breaks=seq(0,10,2), limits = c(-0.3,11)) +
+  labs(x="View", 
+       y = "Frequency of minigame being played") +
+  scale_fill_manual(values = c("#d1e5f0", "#fddbc7")) +
+  scale_colour_manual(values = c("#67a9cf", "#ef8a62")) +
+  theme_linedraw() +
+  theme(legend.position = "none",
+        axis.title.x = element_blank())
+
+ggsave("plots/gend_number_of_times_minigame_was_played_gender.png", width = 3, height = 4)
+
 # plot number of people using external sources
 
 categories <- c("Number of participants", "Participants using external sources", "Participants not using external sources", "Sources usage rate")
@@ -283,4 +351,6 @@ ggplot() +
         axis.title.x = element_blank())
 
 ggsave("plots/gend_number_of_people_checking_external_sources.png", width = 8, height = 4.5)
+
+
 
