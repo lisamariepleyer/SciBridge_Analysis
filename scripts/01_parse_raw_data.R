@@ -1,7 +1,5 @@
 library(data.table)
 
-setwd('../')
-
 quizstarts <- fread('raw_data/SciBridge - quizstarts.csv')
 questions <- fread('raw_data/SciBridge - questions.csv')
 personal_infos <- fread('raw_data/SciBridge - personalinfos.csv')
@@ -56,6 +54,7 @@ average_per_question_data <- questions[,
                                          sum(isCorrect),
                                          sum(isCorrect)/.N,
                                          mean(answer_duration),
+                                         sd(answer_duration),
                                          sum(hasViewedSource),
                                          sum(hasViewedSource)/.N,
                                          sum(hasViewedGame),
@@ -66,7 +65,8 @@ names(average_per_question_data) <- c("question",
                                       "total_submissions", 
                                       "no_answered_correctly",
                                       "perc_answered_correctly",
-                                      "average_time_to_answer",
+                                      "mean_time_to_answer",
+                                      "std_time_to_answer",
                                       "no_has_viewed_source",
                                       "perc_has_viewed_source",
                                       "no_has_viewed_game",
