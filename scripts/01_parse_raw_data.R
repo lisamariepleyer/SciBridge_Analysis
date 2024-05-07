@@ -4,6 +4,9 @@ quizstarts <- fread('raw_data/SciBridge - quizstarts.csv')
 questions <- fread('raw_data/SciBridge - questions.csv')
 personal_infos <- fread('raw_data/SciBridge - personalinfos.csv')
 
+hard_questions <- c(2, 5, 6, 7, 8, 10)
+easy_questions <- c(1, 3, 4, 9)
+
 # parse Ja, Nein, keine Angabe and NA values to something programmatically meaningful
 
 if (length(unique(quizstarts$uid)) < length(quizstarts$uid)) {
@@ -47,7 +50,7 @@ for (i in 1:nrow(quizstarts)) {
             by = .EACHI]
 }
 
-# gather average per question data
+## gather average per question data
 
 average_per_question_data <- questions[,
                                        .(.N,
@@ -74,8 +77,7 @@ names(average_per_question_data) <- c("question",
 
 average_per_question_data [, "area" := c("it", "physics_chemistry", "medicine", "physics_chemistry", "it", "climate_change", "medicine", "physics_chemistry", "it", "climate_change")]
 
-
-# gather average per user data
+## gather average per user data
 
 average_per_user_data <- data.table(uid = quizstarts$uid,
                                     view = quizstarts$view)
@@ -122,6 +124,53 @@ setnames(average_per_user_data, "hasUsedGoogle", "has_used_google")
 
 average_per_user_data <- personal_infos[, .(uid, age, gender, level_it, level_physics_chemistry, level_medicine, level_climate_change)][average_per_user_data]
 
+## gather average per question difficulty data
+
+answered_all_questions <- questions[,.N, uid][N == 10, uid]
+setkey(quizstarts, uid)
+
+average_per_qd_data <- data.table(uid = rep(answered_all_questions, 2),
+                                  view = rep(quizstarts[answered_all_questions, view], 2),
+                                  difficulty_level = rep(c("difficult", "easy"), each = length(answered_all_questions)))
+setkey(average_per_qd_data, uid, difficulty_level)
+
+questions[, difficulty_level := ""]
+questions[question %in% hard_questions, difficulty_level := "difficult"]
+questions[question %in% easy_questions, difficulty_level := "easy"]
+
+# track quiz score
+
+tmp <- questions[isCorrect == TRUE, .N, .(uid, difficulty_level)]
+setnames(tmp, "N", "number_of_correct_answers"); setkey(tmp, uid, difficulty_level)
+average_per_qd_data <- tmp[average_per_qd_data]
+
+average_per_qd_data[difficulty_level == "easy", percent_correct_answers := (number_of_correct_answers / length(easy_questions)) * 100]
+average_per_qd_data[difficulty_level == "difficult", percent_correct_answers := (number_of_correct_answers / length(hard_questions)) * 100]
+average_per_qd_data[is.na(percent_correct_answers), percent_correct_answers := 0]
+
+# track average time spent on each question
+
+tmp <- questions[, mean(answer_duration), .(uid, difficulty_level)]
+setnames(tmp, "V1", "average_time_spent_to_answer"); setkey(tmp, uid, difficulty_level)
+average_per_qd_data <- tmp[average_per_qd_data]
+
+# track usage of sources
+
+tmp <- questions[, sum(hasViewedSource), .(uid, difficulty_level)]
+setnames(tmp, "V1", "number_has_used_sources"); setkey(tmp, uid, difficulty_level)
+average_per_qd_data <- tmp[average_per_qd_data]
+
+average_per_qd_data[, has_used_sources := ifelse(number_has_used_sources > 0, TRUE, FALSE)]
+
+tmp <- questions[, sum(hasViewedGame), .(uid, difficulty_level)]
+setnames(tmp, "V1", "number_has_viewed_game"); setkey(tmp, uid, difficulty_level)
+average_per_qd_data <- tmp[average_per_qd_data]
+
+average_per_qd_data[view == "plain", number_has_viewed_game := NA]
+average_per_qd_data[, has_viewed_game := ifelse(number_has_viewed_game > 0, TRUE, FALSE)]
+
+average_per_qd_data <- personal_infos[, .(uid, age, gender, level_it, level_physics_chemistry, level_medicine, level_climate_change)][average_per_qd_data]
+
 # save data
 
 fwrite(average_per_question_data, "raw_data/average_per_question_data.csv")
@@ -133,3 +182,5 @@ saveRDS(questions, "raw_data/parsed_questions_data.rds")
 fwrite(average_per_user_data, "raw_data/average_per_user_data.csv")
 saveRDS(average_per_user_data, "raw_data/average_per_user_data.rds")
 
+fwrite(average_per_qd_data, "raw_data/average_per_question_difficulty_data.csv")
+saveRDS(average_per_qd_data, "raw_data/average_per_question_difficulty_data.rds")
