@@ -151,6 +151,7 @@ for (v in c("plain", "feedback")) {
   print(v)
   print(t.test(number_has_used_sources ~ difficulty_level, participants[view == v]))
 }
+# though not fair cause there were more hard than easy questions!
 
 ggplot(participants, 
        aes(x=view, y=number_has_used_sources)) + 
@@ -303,5 +304,8 @@ ggsave("plots/qdif_number_of_times_minigame_was_played_difficulty_level.png", wi
 # 
 # ggsave("plots/gend_number_of_people_checking_external_sources.png", width = 8, height = 4.5)
 
+questions <- readRDS("raw_data/parsed_questions_data.rds")
+answered_all_questions <- questions[,.N, uid][N == 10, uid]
 
+t.test(answer_duration ~ difficulty_level, questions[answered_all_questions], alternative="greater")
 
