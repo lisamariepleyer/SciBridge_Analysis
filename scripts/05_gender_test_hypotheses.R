@@ -51,7 +51,9 @@ ggplot(participants[gender %in% goi],
   scale_colour_manual(values = dark_cols) +
   theme_linedraw() +
   theme(legend.position = "none",
-        axis.title.x = element_blank())
+        axis.title.x = element_blank(),
+        strip.background = element_rect(fill="#f2f2f2"),
+        strip.text = element_text(color="black"))
 
 ggsave("plots/gend_quiz_score_per_view.png", width = 6, height = 4)
 
@@ -87,7 +89,9 @@ ggplot(participants[gender %in% goi],
   scale_colour_manual(values = dark_cols) +
   theme_linedraw() +
   theme(legend.position = "none",
-        axis.title.x = element_blank())
+        axis.title.x = element_blank(),
+        strip.background = element_rect(fill="#f2f2f2"),
+        strip.text = element_text(color="black"))
 
 ggsave("plots/gend_average_time_spent_answering_question.png", width = 6, height = 4)
 
@@ -130,7 +134,9 @@ ggplot(participants[gender %in% goi],
   scale_colour_manual(values = dark_cols) +
   theme_linedraw() +
   theme(legend.position = "none",
-        axis.title.x = element_blank())
+        axis.title.x = element_blank(),
+        strip.background = element_rect(fill="#f2f2f2"),
+        strip.text = element_text(color="black"))
 
 ggsave("plots/gend_number_of_times_sources_were_checked.png", width = 6, height = 4)
 
@@ -180,7 +186,9 @@ ggplot() +
             vjust=1, size=3.5, color = c(dark_cols[1], dark_cols[2], dark_cols[2], dark_cols[1])) +
   theme_linedraw() +
   theme(legend.title = element_blank(),
-        axis.title.x = element_blank())
+        axis.title.x = element_blank(),
+        strip.background = element_rect(fill="#f2f2f2"),
+        strip.text = element_text(color="black"))
 
 ggsave("plots/gend_number_of_people_checking_sources.png", width = 8, height = 4.5)
 
@@ -218,7 +226,9 @@ ggplot(participants[gender %in% goi],
   scale_colour_manual(values = dark_cols) +
   theme_linedraw() +
   theme(legend.position = "none",
-        axis.title.x = element_blank())
+        axis.title.x = element_blank(),
+        strip.background = element_rect(fill="#f2f2f2"),
+        strip.text = element_text(color="black"))
 
 ggsave("plots/gend_number_of_times_sources_were_checked_gender.png", width = 6, height = 4)
 
@@ -268,7 +278,9 @@ ggplot() +
             vjust=1, size=3.5, color = c(dark_cols[1], dark_cols[2], dark_cols[2], dark_cols[1])) +
   theme_linedraw() +
   theme(legend.title = element_blank(),
-        axis.title.x = element_blank())
+        axis.title.x = element_blank(),
+        strip.background = element_rect(fill="#f2f2f2"),
+        strip.text = element_text(color="black"))
 
 ggsave("plots/gend_number_of_people_playing_minigame.png", width = 8, height = 4.5)
 
@@ -348,7 +360,9 @@ ggplot() +
             vjust=1, size=3.5, color = c(dark_cols[1], dark_cols[2], dark_cols[2], dark_cols[1])) +
   theme_linedraw() +
   theme(legend.title = element_blank(),
-        axis.title.x = element_blank())
+        axis.title.x = element_blank(),
+        strip.background = element_rect(fill="#f2f2f2"),
+        strip.text = element_text(color="black"))
 
 ggsave("plots/gend_number_of_people_checking_external_sources.png", width = 8, height = 4.5)
 

@@ -94,7 +94,9 @@ ggplot(number_in_group_per_view,
             size=3.5, color=dark_cols[2]) +
   theme_linedraw() +
   theme(axis.title.x = element_blank(),
-        legend.position = "none")
+        legend.position = "none",
+        strip.background = element_rect(fill="#f2f2f2"),
+        strip.text = element_text(color="black"))
 
 ggsave("plots/demo_participants_per_age_group.png", width = 7, height = 4)
 
@@ -117,7 +119,9 @@ ggplot(number_in_group_per_view,
             size=3.5, color=dark_cols[2]) +
   theme_linedraw() +
   theme(axis.title.x = element_blank(),
-        legend.position = "none")
+        legend.position = "none",
+        strip.background = element_rect(fill="#f2f2f2"),
+        strip.text = element_text(color="black"))
 
 ggsave("plots/demo_participants_per_gender.png", width = 7, height = 4)
 
@@ -161,6 +165,8 @@ ggplot(number_in_group_per_view,
   theme_linedraw() +
   theme(axis.title.x = element_blank(),
         axis.text.x = element_text(angle = 20, hjust = 1),
-        legend.title = element_blank())
+        legend.title = element_blank(),
+        strip.background = element_rect(fill="#f2f2f2"),
+        strip.text = element_text(color="black"))
 
 ggsave("plots/demo_participants_per_knowledge_area.png", width = 7, height = 4)

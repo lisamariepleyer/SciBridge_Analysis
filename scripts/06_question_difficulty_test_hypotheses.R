@@ -40,7 +40,9 @@ ggplot(participants,
   scale_colour_manual(values = dark_cols) +
   theme_linedraw() +
   theme(legend.position = "none",
-        axis.title.x = element_blank())
+        axis.title.x = element_blank(),
+        strip.background = element_rect(fill="#f2f2f2"),
+        strip.text = element_text(color="black"))
 
 ggsave("plots/qdif_quiz_score_per_view.png", width = 6, height = 4)
 
@@ -75,7 +77,9 @@ ggplot(participants,
   scale_colour_manual(values = dark_cols) +
   theme_linedraw() +
   theme(legend.position = "none",
-        axis.title.x = element_blank())
+        axis.title.x = element_blank(),
+        strip.background = element_rect(fill="#f2f2f2"),
+        strip.text = element_text(color="black"))
 
 ggsave("plots/qdif_average_time_spent_answering_question.png", width = 6, height = 4)
 
@@ -171,7 +175,9 @@ ggplot(participants,
   scale_colour_manual(values = dark_cols) +
   theme_linedraw() +
   theme(legend.position = "none",
-        axis.title.x = element_blank())
+        axis.title.x = element_blank(),
+        strip.background = element_rect(fill="#f2f2f2"),
+        strip.text = element_text(color="black"))
 
 ggsave("plots/qdif_number_of_times_sources_were_checked_difficulty_level.png", width = 6, height = 4)
 
